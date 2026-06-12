@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>❤️ Feliz Dia dos Namorados! ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        /* Bloqueia seleção de texto e toques longos no Android */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+</head>
+<body 
+  style="background-image: url('fundo_namorados.jpg');" 
+  class="flex flex-col items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat p-4 text-center font-sans overflow-hidden">
+  
+  <div class="absolute inset-0 bg-black/40 z-[-1]"></div>
+
+    <div id="tela-inicio" class="max-w-md w-full p-6 bg-white rounded-2xl shadow-xl border border-rose-100 block">
+        <h1 class="text-3xl font-bold text-rose-600 mb-4">❤️ Feliz Dia dos Namorados! ❤️</h1>
+        <p class="text-gray-600 mb-6 text-base sm:text-lg">
+            Para liberar o seu presente de hoje, você precisa provar que me conhece bem e acertar esse mini quiz sobre a nossa história. Preparada?
+        </p>
+        <button onclick="iniciarJogo()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 px-6 rounded-xl shadow-md active:scale-95 transition-transform">
+            Começar Desafio
+        </button>
+    </div>
+
+    <div id="tela-quiz" class="max-w-md w-full p-6 bg-white rounded-2xl shadow-xl border border-rose-100 hidden">
+        <span id="progresso-quiz" class="text-xs font-bold uppercase tracking-wider text-rose-400">
+            Pergunta 1 de 3
+        </span>
+        <h2 id="texto-pergunta" class="text-xl font-semibold text-gray-800 mt-2 mb-6 min-h-[56px] flex items-center justify-center">
+            Carregando pergunta...
+        </h2>
+        
+        <div id="container-opcoes" class="space-y-3">
+            </div>
+
+        <p id="mensagem-erro" class="text-red-500 text-sm mt-4 font-medium hidden">
+            ❌ Errouuu! Tenta de novo, eu sei que você lembra! 😂
+        </p>
+    </div>
+
+    <div id="tela-pedido" class="max-w-md w-full p-8 bg-white rounded-2xl shadow-2xl border-2 border-rose-300 relative overflow-hidden min-h-[380px] flex flex-col justify-between items-center hidden">
+        <div>
+            <h1 class="text-3xl font-extrabold text-rose-600 mb-2">Você acertou tudo!</h1>
+            <p class="text-gray-500 text-sm sm:text-base">Agora vem a pergunta mais importante...</p>
+        </div>
+        
+        <h2 class="text-3xl font-black text-gray-800 my-6">Quer casar comigo? 💍</h2>
+        
+        <div id="area-botoes" class="flex justify-center items-center gap-6 w-full h-24 relative">
+            <button onclick="aceitarPedido()" class="bg-emerald-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg active:scale-95 transition-transform text-xl z-10">
+                SIM! 💖
+            </button>
+            
+            <button id="botao-nao" class="bg-gray-400 text-white font-medium py-2 px-4 rounded-lg shadow-md transition-all duration-150 touch-none">
+                Não 😢
+            </button>
+        </div>
+    </div>
+
+    <div id="tela-sucesso" class="max-w-md w-full p-8 bg-white rounded-2xl shadow-2xl border border-emerald-100 hidden">
+        <h1 class="text-5xl mb-4">🎉 💍 ❤️</h1>
+        <h1 class="text-3xl font-black text-emerald-600 mb-4">ELA DISSE SIM!!!</h1>
+        <div class="my-6 border-4 border-emerald-100 rounded-xl overflow-hidden shadow-lg">
+            <img src="foto_casamento.jpg" alt="Nossa Foto Feliz" class="w-full h-auto object-cover max-h-[300px]">
+        </div>
+        <p class="text-gray-700 text-base sm:text-lg leading-relaxed mb-6">
+            Obrigado por ser tudo o que eu sempre sonhei, pelo seu cuidado e por cuidar tão bem de mim (até na hora de servir o meu prato kkkk). Grato a Deus por ter preparado você para mim! Te amo muitoooooooo, minha noiva! (Eu já sabia que você ia aceitar, tá? haha) ❤️
+        </p>
+        <div class="text-sm font-semibold text-rose-500 animate-pulse">
+            Dica: Olha pra frente... 😉
+        </div>
+    </div>
+
+    <script>
+        // Altere aqui as perguntas, opções e as respostas corretas!
+        const PERGUNTAS = [
+            {
+                pergunta: "Em qual ano nós começamos a namorar oficial mesmo?",
+                opcoes: ["2022", "2023", "2024", "2021"],
+                respostaCorreta: "2022"
+            },
+            {
+                pergunta: "Qual é o meu prato favorito que você faz ou que sempre comemos juntos?",
+                opcoes: ["Pizza", "Sushi", "Hambúrguer", "Massa"],
+                respostaCorreta: "Hambúrguer"
+            },
+            {
+                pergunta: "Qual foi o lugar do nosso primeiro encontro marcante?",
+                opcoes: ["Cinema", "Parque", "Restaurante", "Carro"],
+                respostaCorreta: "Carro"
+            },
+            {
+                pergunta: "Quem foi que deu iniciativa de beijo aquele dia?",
+                opcoes: ["Fabio", "Ana"],
+                respostaCorreta: "Ana"
+            },
+            {
+                pergunta: "Quem é mais teimoso(a)?",
+                opcoes: ["Fabio", "Ana"],
+                respostaCorreta: "Ana"
+            }
+            
+        ];
+
+        let perguntaAtual = 0;
+
+        function iniciarJogo() {
+            document.getElementById('tela-inicio').classList.add('hidden');
+            document.getElementById('tela-quiz').classList.remove('hidden');
+            carregarPergunta();
+        }
+
+        function carregarPergunta() {
+            document.getElementById('mensagem-erro').classList.add('hidden');
+            
+            const dadosPergunta = PERGUNTAS[perguntaAtual];
+            document.getElementById('progresso-quiz').innerText = `Pergunta ${perguntaAtual + 1} de ${PERGUNTAS.length}`;
+            document.getElementById('texto-pergunta').innerText = dadosPergunta.pergunta;
+            
+            const containerOpcoes = document.getElementById('container-opcoes');
+            containerOpcoes.innerHTML = ''; // Limpa as opções anteriores
+
+            dadosPergunta.opcoes.forEach(opcao => {
+                const botao = document.createElement('button');
+                botao.innerText = opcao;
+                botao.className = "w-full text-left bg-gray-50 active:bg-rose-100 active:text-rose-700 text-gray-700 font-medium py-3 px-4 rounded-xl border border-gray-200 transition-colors";
+                
+                botao.onclick = () => verificarResposta(opcao);
+                containerOpcoes.appendChild(botao);
+            });
+        }
+
+        function verificarResposta(opcaoSelecionada) {
+            const respostaCorreta = PERGUNTAS[perguntaAtual].respostaCorreta;
+
+            if (opcaoSelecionada === respostaCorreta) {
+                if (perguntaAtual + 1 < PERGUNTAS.length) {
+                    perguntaAtual++;
+                    carregarPergunta();
+                } else {
+                    abrirTelaPedido();
+                }
+            } else {
+                document.getElementById('mensagem-erro').classList.remove('hidden');
+            }
+        }
+
+        function abrirTelaPedido() {
+            document.getElementById('tela-quiz').classList.add('hidden');
+            document.getElementById('tela-pedido').classList.remove('hidden');
+            configurarBotaoFugitivo();
+        }
+
+        function configurarBotaoFugitivo() {
+            const botaoNao = document.getElementById('botao-nao');
+            const telaPedido = document.getElementById('tela-pedido');
+
+            const desviar = (e) => {
+                if (e) e.preventDefault(); // Evita cliques fantasmas no Android
+
+                const containerRect = telaPedido.getBoundingClientRect();
+                const padding = 90; // Margem de segurança para o botão não sumir do card
+                
+                const maxX = containerRect.width - padding;
+                const maxY = containerRect.height - padding;
+
+                const randomX = Math.floor(Math.random() * (maxX - padding/2)) + padding/4;
+                const randomY = Math.floor(Math.random() * (maxY - padding/2)) + padding/4;
+
+                botaoNao.style.position = 'absolute';
+                botaoNao.style.left = `${randomX}px`;
+                botaoNao.style.top = `${randomY}px`;
+            };
+
+            // Escuta tanto o mouse quanto o toque do celular Android
+            botaoNao.addEventListener('mouseenter', desviar);
+            botaoNao.addEventListener('touchstart', desviar);
+            botaoNao.addEventListener('click', desviar);
+        }
+
+        function aceitarPedido() {
+            document.getElementById('tela-pedido').classList.add('hidden');
+            document.getElementById('tela-sucesso').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
